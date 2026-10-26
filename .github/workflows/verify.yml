@@ -1,0 +1,37 @@
+name: Rebuild and inspect the anonymous TeX archive
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install document dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends texlive-xetex texlive-latex-extra texlive-science texlive-fonts-recommended texlive-fonts-extra fonts-texgyre
+          python -m pip install -r requirements.txt
+      - name: Inspect source coverage and rebuild all documents
+        run: |
+          python tools/verify_archive.py
+          python tools/build.py --publish
+          python tools/verify_archive.py --pdf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ecen-vlsi-restored-exams-and-anonymous-prelabs
+          path: |
+            exams/exam1-restored.pdf
+            labs/prelabs.pdf

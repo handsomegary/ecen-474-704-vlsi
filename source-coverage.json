@@ -1,0 +1,13 @@
+{
+  "exam_1": [
+    {"id": "spring-2018", "date": "2018-02-13", "pages": 6, "questions": 3, "source_url": "https://people.engr.tamu.edu/spalermo/ecen474/exam1_solution_2018.pdf"},
+    {"id": "fall-2016", "date": "2016-09-29", "pages": 6, "questions": 3, "source_url": "https://people.engr.tamu.edu/spalermo/ecen474/exam1_solution_fall2016.pdf"},
+    {"id": "spring-2016", "date": "2016-02-24", "pages": 5, "questions": 3, "source_url": "https://people.engr.tamu.edu/spalermo/ecen474/exam1_solution_2016.pdf"}
+  ],
+  "prelab_numbers": [3, 5, 6, 7, 8, 9],
+  "laboratory_scope": "Only the six supplied TeX prelabs and PDFs regenerated from those sources. Word reports and original PDF documents are excluded by request.",
+  "lab_3_dependencies": ["current_source.png", "capacitor.png", "resistor.png"],
+  "figure_recovery": "The three figures referenced by the supplied Lab 3 TeX were recovered from its companion compiled PDF and checked visually.",
+  "publication_policy": "Original exam scans and laboratory PDFs are not published. Only the two rebuilt PDF collections, editable TeX, required recovered figures, and build/verification files are included.",
+  "anonymization": "Student name, student number, and initialed self-citations have been replaced with anonymous attribution; PDF metadata is anonymous. Public instructor and course attribution remains."
+}

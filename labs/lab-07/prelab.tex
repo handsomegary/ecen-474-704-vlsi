@@ -1,0 +1,785 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{newtxtext,newtxmath}
+\usepackage{helvet}
+\usepackage{enumitem}
+\usepackage{caption,booktabs}
+\usepackage[hidelinks]{hyperref}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\emergencystretch}{2em}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\AtBeginDocument{\fontsize{12}{13.8}\selectfont}
+\setlist[enumerate,1]{label=\arabic*.,leftmargin=0.25in,
+labelsep=0.08in,align=left,topsep=0pt,itemsep=14pt,parsep=6pt}
+\newcommand{\um}{\,\mu\mathrm{m}}
+\newcommand{\uA}{\,\mu\mathrm{A}}
+\newcommand{\uS}{\,\mu\mathrm{S}}
+\newcommand{\mS}{\,\mathrm{mS}}
+\newcommand{\kohm}{\,\mathrm{k}\Omega}
+\newcommand{\Mohm}{\,\mathrm{M}\Omega}
+\newcommand{\V}{\,\mathrm{V}}
+\newcommand{\MHz}{\,\mathrm{MHz}}
+\newcommand{\kHz}{\,\mathrm{kHz}}
+\newcommand{\pF}{\,\mathrm{pF}}
+
+\hypersetup{pdfauthor={Anonymous contributor},pdftitle={ECEN 474/704 - Lab 7 Prelab},pdfsubject={Anonymized laboratory prelab}}
+\begin{document}
+{\fontsize{11}{12.65}\selectfont
+\hfill October 16, 2026\par}
+{\centering
+{\fontsize{14}{16.1}\selectfont\sffamily\bfseries ECEN 474/704\par}
+{\fontsize{14}{16.1}\selectfont Lab 7: Prelab\par}
+{\fontsize{14}{16.1}\selectfont Anonymous contributor\par}
+}
+\vspace{12pt}
+\begin{enumerate}
+
+\item \textbf{Comparison of inverting-amplifier topologies.}
+Rank the four amplifiers in gain, input impedance, output impedance,
+and linearity. Give expressions for the first three quantities.
+
+\textbf{Solution.}
+
+The comparison assumes comparable bias currents and device parameters.
+The ratings favor high voltage gain, high input impedance, and low
+output impedance for driving a load.
+
+\begin{center}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Specification & Current mirror & Digital CMOS & PMOS buffer & CMOS buffer\\
+\midrule
+Voltage gain & Medium & Good & Poor & Poor\\
+Input impedance & Good & Good & Good & Good\\
+Output impedance & Poor & Poor & Good & Good\\
+Linearity & Medium & Poor & Good & Medium\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The buffers have a target gain of $-1$ and are linear in the ideal
+square-law model. Tracking between devices of the same type favors
+the PMOS pair, although body effect and other nonidealities limit
+its linearity.
+
+\textbf{(a) Gain and output resistance.}
+Let $g_{oi}=1/r_{oi}$ and $g_o=g_{o1}+g_{o2}$.
+With the supplies and bias-reference node at AC ground,
+\begin{center}
+\small
+\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Circuit & $A_{v0}$ & $R_{\mathrm{out}}$\\
+\midrule
+Current-mirror load & $-g_{m1}/g_o$ & $1/g_o$\\
+Digital CMOS & $-(g_{m1}+g_{m2})/g_o$ & $1/g_o$\\
+Self-biased PMOS & $-g_{m1}/(g_{m2}+g_{mb2}+g_o)$
+ & $1/(g_{m2}+g_{mb2}+g_o)$\\
+Self-biased CMOS & $-g_{m1}/(g_{m2}+g_o)$ & $1/(g_{m2}+g_o)$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The output resistance is evaluated with the input held constant. A finite
+$R_L$ adds $1/R_L$ to each denominator. The PMOS load's source
+is the output while its body is fixed, giving the $g_{mb2}$ term.
+The CMOS load's source and body are both fixed at $V_{DD}$.
+
+\textbf{(b) Input impedance.}
+Ignoring gate leakage, all four circuits have
+$R_{\mathrm{in,DC}}\rightarrow\infty$.
+At finite frequency, let $k(s)=v_o/v_A$, where $v_A$ is the gate node
+after $R_S$. Then
+\[
+Z_{\mathrm{in},A}(s)=
+\frac{1}{s\{C_A+C_C[1-k(s)]\}}
+\approx\frac{1}{s[C_A+C_C(1+|A_{v0}|)]}.
+\]
+The source sees $R_S+Z_{\mathrm{in},A}$.
+For the single-input-device circuits, $C_A\approx C_{gs1}$; digital CMOS has
+$C_A\approx C_{gs1}+C_{gs2}$.
+Similarly, $C_C=C_m+C_{gd1}$, with $C_{gd2}$ added for digital CMOS.
+Thus the equal DC input-resistance ratings do not imply equal AC
+input loading.
+
+\newpage
+\item \textbf{Miller-theorem derivation and comparison.}
+Derive the generic amplifier transfer function using Miller's theorem,
+compare it with the nodal result, and discuss the approximation's utility.
+
+\textbf{Solution.}
+
+\textbf{(a) Miller equivalent.}
+Let $v_A$ be the input node after $R_A$, let $v_o$ be the output,
+and define $A_0=G_mR_B>0$, so the DC voltage gain is $-A_0$.
+For the capacitor $C_C$ between these nodes,
+\begin{align*}
+i_A&=sC_C(v_A-v_o)=sC_C[1-k(s)]v_A,\\
+i_o&=sC_C(v_o-v_A)=sC_C[1-1/k(s)]v_o,
+\qquad k(s)=\frac{v_o}{v_A}.
+\end{align*}
+These identities are exact if the frequency-dependent $k(s)$ is retained.
+Replacing $k(s)$ by its low-frequency value $-A_0$ gives
+\[
+\boxed{C_{\mathrm{in}}=C_A+C_C(1+A_0),\qquad
+C_{\mathrm{out}}=C_B+C_C(1+1/A_0).}
+\]
+The input divider and output transconductance stage then give
+\[
+\frac{v_A}{v_{\mathrm{in}}}\approx
+\frac{1}{1+sR_AC_{\mathrm{in}}},\qquad
+\frac{v_o}{v_A}\approx
+\frac{-G_mR_B}{1+sR_BC_{\mathrm{out}}}.
+\]
+Thus the constant-gain Miller approximation is
+\[
+\boxed{H_M(s)\approx
+\frac{-A_0}
+{(1+sR_AC_{\mathrm{in}})(1+sR_BC_{\mathrm{out}})}.}
+\]
+The resulting time constants are $R_AC_{\mathrm{in}}$ and
+$R_BC_{\mathrm{out}}$. Their accuracy as pole estimates depends on
+the frequency variation of the inter-node gain.
+
+\textbf{(b) Exact nodal result.}
+With the controlled current $G_mv_A$ directed from the output to
+AC ground, the two node equations are
+\begin{align*}
+\left[\frac{1}{R_A}+s(C_A+C_C)\right]v_A-sC_Cv_o
+ &=\frac{v_{\mathrm{in}}}{R_A},\\
+(G_m-sC_C)v_A+
+\left[\frac{1}{R_B}+s(C_B+C_C)\right]v_o&=0.
+\end{align*}
+Eliminating $v_A$ yields
+\[
+\boxed{H(s)=\frac{-A_0(1-sC_C/G_m)}{1+a s+b s^2},}
+\]
+where
+\begin{align*}
+a&=R_A(C_A+C_C)+R_B(C_B+C_C)+G_mR_AR_BC_C,\\
+b&=R_AR_B(C_AC_B+C_AC_C+C_BC_C).
+\end{align*}
+The denominator and zero agree with the handout. The overall
+minus sign makes $H(0)=-G_mR_B$, consistent with an inverting amplifier.
+The exact inter-node gain is
+\[
+k(s)=-\frac{G_m-sC_C}{1/R_B+s(C_B+C_C)}.
+\]
+Using this $k(s)$ in the Miller identities recovers the same nodal result.
+
+\newpage
+\textbf{(c) Comparison and utility.}
+Expanding $H_M$ gives coefficients
+$a_M=R_AC_{\mathrm{in}}+R_BC_{\mathrm{out}}$ and
+$b_M=R_AR_BC_{\mathrm{in}}C_{\mathrm{out}}$.
+Their differences from the exact denominator are
+\begin{align*}
+a_M-a&=\frac{R_BC_C}{A_0}=\frac{C_C}{G_m},\\
+b_M-b&=R_AR_B\left[
+\frac{C_AC_C}{A_0}+A_0C_BC_C
++C_C^2\left(2+A_0+\frac{1}{A_0}\right)\right].
+\end{align*}
+The constant-gain approximation also removes the right-half-plane zero
+\[
+\boxed{s_z=+\frac{G_m}{C_C},\qquad
+f_z=\frac{G_m}{2\pi C_C}.}
+\]
+Miller's theorem itself is an exact circuit identity; the loss of
+accuracy comes from substituting the constant $-A_0$ for $k(s)$.
+The approximation therefore provides an estimate of input loading
+and an initial compensation capacitance. The second pole and phase
+near unity gain require the frequency-dependent gain or the nodal result.
+
+For $A_0\gg1$, negligible $C_A$, and a dominant Miller time constant,
+\[
+f_{p1}\approx\frac{1}{2\pi A_0R_AC_C},\qquad
+\mathrm{GBW}\approx A_0f_{p1}
+\approx\frac{1}{2\pi R_AC_C}.
+\]
+For $R_A=100\kohm$ and $\mathrm{GBW}=2\MHz$, this gives
+\[
+C_C\approx0.7958\,\mathrm{pF}.
+\]
+This is the total feedback capacitance, including $C_{gd}$; the external
+$C_m$ is smaller by the relevant parasitic capacitance.
+The full two-node expression provides the corresponding refinement.
+
+\textbf{(d) Frequency and phase conventions.}
+When $a^2\geq4b$, the two real poles are at
+$s=-\omega_{p1}$ and $s=-\omega_{p2}$, where
+\[
+\omega_{p1}=\frac{2}{a+\sqrt{a^2-4b}},\qquad
+\omega_{p2}=\frac{a+\sqrt{a^2-4b}}{2b},\qquad
+f_{pi}=\frac{\omega_{pi}}{2\pi}.
+\]
+Define the measured bandwidth $f_{\mathrm{BW}}$ by
+$|H(j2\pi f_{\mathrm{BW}})|=A_0/\sqrt{2}$.
+It is approximately $f_{p1}$ only when the other pole and the zero
+are sufficiently far away. The measured gain--bandwidth product is
+$\mathrm{GBW}=A_0f_{\mathrm{BW}}$, while the unity-gain frequency
+satisfies $|H(j2\pi f_{\mathrm{UGF}})|=1$.
+
+After removing the DC inversion, the dynamic phase lag is
+\[
+\phi_{\mathrm{lag}}(f)=
+\tan^{-1}\!\left(\frac{f}{f_{p1}}\right)+
+\tan^{-1}\!\left(\frac{f}{f_{p2}}\right)+
+\tan^{-1}\!\left(\frac{f}{f_z}\right).
+\]
+The RHP zero adds phase lag. Therefore,
+$f_{p2}\geq\sqrt{3}\,\mathrm{GBW}$ alone guarantees neither the exact
+UGF nor a lag below $120^\circ$ when the zero is appreciable.
+For a monotone low-pass buffer with $A_0=1$, a positive-frequency
+unity-gain crossing need not exist. The buffer phase is therefore
+evaluated at $f_{\mathrm{BW}}$, as specified in the handout.
+
+\newpage
+\item \textbf{Design of the four inverting amplifiers.}
+Design the current-mirror-loaded inverter, digital CMOS inverter,
+self-biased PMOS inverter, and self-biased CMOS inverter in
+Figs.~7-5, 7-6, 7-8, and 7-9, respectively.
+All four use $V_{DD}=+0.9\V$, $V_{SS}=-0.9\V$,
+$R_S=100\kohm$, and $\mathrm{GBW}=2\MHz$.
+
+\textbf{Solution.}
+
+\textbf{Common specifications and device assumptions.}
+The high-gain designs require $A_0=10^{30/20}=31.6228$,
+$C_L=1\pF$, and dynamic phase lag below $120^\circ$ at UGF.
+The two diode-load designs require $A_0=1$ and $C_L=25\pF$.
+Here $A_0=|A_{v0}|$ is positive; the voltage gain is negative.
+The nominal output is selected as $V_{o,Q}=0$.
+
+The device parameters are taken from Table~I of the Lab~1 MOS
+characterization report, measured at single-finger $W/L=5/0.27\um$:
+\begin{center}
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Parameter & NFET & PFET\\
+\midrule
+$K_P=\mu C_{ox}$ ($\mu$A/V$^2$) & 215.6 & 47.57\\
+$|V_{TH}|$ (V) & 0.4330 & 0.4068\\
+$\lambda$ at $L_0=0.27\um$ (V$^{-1}$) & 0.1624 & 0.1945\\
+$\theta$ (V$^{-1}$) & 0.9999 & 0.6558\\
+\bottomrule
+\end{tabular}
+\end{center}
+The DC sizing uses the square-law model. Channel-length modulation
+is retained only through the small-signal estimate
+$g_o\approx\lambda I_D$:
+\[
+I_D=\frac12 K_P\frac{W_{\mathrm{eff}}}{L}V_{OV}^2,
+\qquad g_m=\frac{2I_D}{V_{OV}},
+\qquad r_o\approx\frac{1}{\lambda I_D}.
+\]
+The numerical designs initially omit body effect, mobility
+degradation, and DC channel-length-modulation corrections.
+The listed $\theta$ values are not applied to the square-law results.
+For lengths different from $L_0$, the assumed scaling is
+\[
+\lambda_n(L)=0.1624\frac{L_0}{L},\qquad
+\lambda_p(L)=0.1945\frac{L_0}{L},
+\]
+while holding $K_P$ and $V_{TH}$ fixed.
+This length dependence is a design approximation that has not been
+verified by device characterization.
+
+The frequency calculation assumes $C_A=0$, $C_B=C_L$, and
+$C_C=C_m$. Gate, junction, and interconnect capacitances in the PDK
+modify this model. The results below are analytical estimates;
+their accuracy requires circuit simulation.
+
+\textbf{Width and multiplicity convention.}
+Each table gives both total effective width and width per finger:
+\[
+W_{\mathrm{eff}}=w\,n_f\,m.
+\]
+Parts~(a)--(d) derive continuous $w_{\mathrm{ana}}$ and $L_{\mathrm{ana}}$.
+The later grid-constrained table gives the initial dimensions, with $w,L$
+on the $0.01\um$ grid and initial $n_f=m=2$; both counts remain
+adjustable. DC and AC verification apply to the selected geometry;
+any subsequent dimensional change requires recalculation and simulation.
+
+\newpage
+\textbf{(a) Current-mirror-loaded inverter (Fig.~7-5).}
+
+\textbf{Transconductance and bias current.}
+M1 is the NMOS driver; M2 and M3 form a 1:1 PMOS mirror.
+The handout's second-pole estimate would give
+\[
+g_{m1}\gtrsim 2\pi(\sqrt{3})(2\MHz)(1\pF)=21.77\uS.
+\]
+This bound neglects the RHP zero. A larger value,
+$g_{m1}=300\uS$, is selected, with phase evaluated using
+the complete two-node transfer function.
+At $L=0.270\um$, $\lambda_\Sigma=\lambda_n+\lambda_p=0.3569\V^{-1}$.
+The required current and overdrive are
+\begin{align*}
+I_D=I_{\mathrm{bias}}
+&=\frac{g_{m1}}{A_0\lambda_\Sigma}
+=\frac{300\times10^{-6}}{31.6228(0.3569)}
+=26.581\uA,\\
+R_{\mathrm{out}}&=\frac{1}{\lambda_\Sigma I_D}=105.409\kohm,\\
+V_{OV1}&=\frac{2I_D}{g_{m1}}=0.177208\V.
+\end{align*}
+The choice $g_{m2}=g_{m3}=g_{m1}$ gives equal overdrives for all three devices.
+The required aspect ratios are
+\[
+\left(\frac{W_{\mathrm{eff}}}{L}\right)_n
+=\frac{2(26.581)}{215.6(0.177208)^2}=7.8522,
+\quad
+\left(\frac{W_{\mathrm{eff}}}{L}\right)_p=35.5881.
+\]
+\begin{center}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Device & $w_{\mathrm{ana}}$ ($\mu$m) & $L_{\mathrm{ana}}$ ($\mu$m) & $n_f$ & $m$ & $W_{\mathrm{eff}}$ ($\mu$m)\\
+\midrule
+M1 (NFET) & 0.53002 & 0.27000 & 2 & 2 & 2.12008\\
+M2, M3 (PFET), each & 2.40220 & 0.27000 & 2 & 2 & 9.60878\\
+\bottomrule
+\end{tabular}
+\end{center}
+The estimated gate biases are
+\begin{align*}
+V_{in,Q}&=V_{SS}+V_{TN}+V_{OV1}=-0.289792\V,\\
+V_{G2}=V_{G3}&=V_{DD}-|V_{TP}|-V_{OV2}=0.315992\V.
+\end{align*}
+With $V_{o,Q}=0$, M1 and M2 each have $|V_{DS}|=0.9\V$;
+M3 is diode-connected with $V_{SD3}=0.584008\V$.
+All exceed $V_{OV}=0.177208\V$ under the assumed model.
+The mirror current will require adjustment when unequal drain
+voltages and DC channel-length modulation are included.
+
+\textbf{Compensation and two-node response.}
+The Miller estimate gives $C_C\approx0.795775\pF$.
+With $f_{\mathrm{BW}}=2\MHz/31.6228=63.2456\kHz$,
+the complete transfer function satisfies the half-power condition at
+$\omega_B=2\pi f_{\mathrm{BW}}$:
+\begin{equation}
+(1-b\omega_B^2)^2+(a\omega_B)^2
+=2\left[1+\left(\frac{\omega_B C_C}{G_m}\right)^2\right].
+\label{eq:halfpower}
+\end{equation}
+This yields $C_m=C_C=0.716828\pF$ in the no-parasitic model.
+The resulting estimates are
+\[
+A_{v0}=-31.6228,\quad f_{p1}=63.2456\kHz,\quad
+f_{p2}=53.005\MHz,\quad f_z=66.608\MHz.
+\]
+The actual unity-gain crossing of this model is
+$f_u=1.99848\MHz$, where the dynamic phase lag is
+$92.07^\circ<120^\circ$. Its GBW is $2.000\MHz$.
+The external $C_m$ is reduced by the intrinsic contribution of $C_{gd1}$.
+
+\newpage
+\textbf{(b) Digital CMOS inverter (Fig.~7-6).}
+
+\textbf{Length and current selection.}
+Both gates are driven by the input, giving
+$G_m=g_{mn}+g_{mp}$.
+The selected bias is $V_{in,Q}=V_{o,Q}=0$, with equal lengths $L_n=L_p=L$.
+The overdrives are
+\[
+V_{OVn}=0.9-0.4330=0.4670\V,\qquad
+V_{OVp}=0.9-0.4068=0.4932\V.
+\]
+Equal drain currents require
+\[
+\frac{\beta_p}{\beta_n}
+=\left(\frac{V_{OVn}}{V_{OVp}}\right)^2=0.89658,
+\qquad \beta_i=K_{Pi}\frac{W_{\mathrm{eff},i}}{L_i}.
+\]
+The unequal thresholds mean that $\beta_n=\beta_p$ does not
+place the exact transition center at zero.
+Using the length-scaling assumption,
+\begin{align*}
+A_0&=\frac{2/V_{OVn}+2/V_{OVp}}{\lambda_n(L)+\lambda_p(L)},\\
+L&=L_0\,
+\frac{A_0[\lambda_n(L_0)+\lambda_p(L_0)]}
+{2/V_{OVn}+2/V_{OVp}}
+=0.365476\um.
+\end{align*}
+The choice $I_D=120\uA$ places the non-dominant pole and zero
+well above the required bandwidth in the assumed model.
+Then
+\begin{align*}
+g_{mn}&=\frac{2(120\uA)}{0.4670\V}=513.919\uS,\\
+g_{mp}&=\frac{2(120\uA)}{0.4932\V}=486.618\uS,\\
+G_m&=1000.537\uS,\qquad
+R_{\mathrm{out}}=\frac{A_0}{G_m}=31.6058\kohm.
+\end{align*}
+
+\textbf{Device sizes and operating point.}
+The effective width of each transistor follows from
+$W_{\mathrm{eff}}=2I_DL/(K_PV_{OV}^2)$:
+\begin{center}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Device & $w_{\mathrm{ana}}$ ($\mu$m) & $L_{\mathrm{ana}}$ ($\mu$m) & $n_f$ & $m$ & $W_{\mathrm{eff}}$ ($\mu$m)\\
+\midrule
+M1 (NFET) & 0.46637 & 0.36548 & 2 & 2 & 1.86547\\
+M2 (PFET) & 1.89509 & 0.36548 & 2 & 2 & 7.58037\\
+\bottomrule
+\end{tabular}
+\end{center}
+At the selected bias, $V_{DS1}=V_{SD2}=0.9\V$, which exceeds
+both overdrives. The NMOS body is at $V_{SS}$ and the PMOS
+body at $V_{DD}$; both active devices have zero source-body bias.
+
+\textbf{Compensation and performance.}
+Solving Eq.~\eqref{eq:halfpower} with the new $G_m$ and
+$R_{\mathrm{out}}$ gives $C_m=C_C=0.754672\pF$.
+The resulting estimates are
+\begin{align*}
+A_{v0}&=-31.6228\quad(30.000\,\mathrm{dB}),\\
+f_{\mathrm{BW}}&=63.2456\kHz,\qquad \mathrm{GBW}=2.000\MHz,\\
+f_{p2}&=167.913\MHz,\qquad f_z=211.006\MHz,\\
+f_u&=1.99895\MHz,\qquad \phi_{\mathrm{lag}}(f_u)=89.41^\circ.
+\end{align*}
+The analytical response satisfies the phase requirement.
+In the physical circuit, $C_C=C_m+C_{gd1}+C_{gd2}$; gate and
+output capacitances also affect the AC response.
+
+\newpage
+\textbf{(c) PMOS-only inverter with self-biased load (Fig.~7-8).}
+
+\textbf{Unity-gain sizing with finite output conductances.}
+M1 is the upper driver. M2 has drain and gate at $V_{SS}$,
+source at $V_o$, and body at $V_{DD}$.
+For the initial no-body-effect calculation at $V_{o,Q}=0$,
+\[
+V_{OV2}=0.9-|V_{TP}|=0.4932\V.
+\]
+The handout's ideal equal-size result $V_o=-V_{in}$ neglects
+finite $g_o$. Retaining $g_o$ gives
+\[
+A_{v0}=-\frac{g_{m1}}{g_{m2}+g_{o1}+g_{o2}}.
+\]
+Unity gain therefore requires $G_m=g_{m1}=G_{\mathrm{out}}$, giving
+$R_{\mathrm{out}}=1/G_m$ and $A_{v0}=-1$.
+The simple load-dominant estimate is
+\[
+G_m\approx2\pi C_L\mathrm{GBW}=314.159\uS.
+\]
+For the initial choice $C_m=0.010\pF$, Eq.~\eqref{eq:halfpower}
+determines $G_m$ at $f_{\mathrm{BW}}=2\MHz$.
+For this unity-gain case,
+\[
+a=2R_SC_m+\frac{C_L+C_m}{G_m},\qquad
+b=\frac{R_SC_LC_m}{G_m},
+\]
+which gives $G_m=318.387\uS$.
+The realizability of this small $C_m$ depends on the PDK's
+available capacitance range and the intrinsic parasitic capacitance.
+
+The choice $L_1=L_2=0.270\um$ gives
+$\lambda_\Sigma=2\lambda_p=0.3890\V^{-1}$.
+Since $g_{m2}=2I_D/V_{OV2}$,
+\begin{align*}
+I_D&=\frac{G_m}{2/V_{OV2}+\lambda_\Sigma}=71.642\uA,\\
+V_{OV1}&=\frac{2I_D}{G_m}=0.450030\V,\\
+V_{in,Q}&=V_{DD}-|V_{TP}|-V_{OV1}=0.043170\V.
+\end{align*}
+Applying the square-law sizing equation separately to M1 and M2:
+\begin{center}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Device & $w_{\mathrm{ana}}$ ($\mu$m) & $L_{\mathrm{ana}}$ ($\mu$m) & $n_f$ & $m$ & $W_{\mathrm{eff}}$ ($\mu$m)\\
+\midrule
+M1 (PFET driver) & 1.00389 & 0.27000 & 2 & 2 & 4.01555\\
+M2 (PFET load) & 0.83584 & 0.27000 & 2 & 2 & 3.34335\\
+\bottomrule
+\end{tabular}
+\end{center}
+The driver is slightly wider to compensate the two output
+conductances. Here $g_{m2}=290.519\uS$ and
+$g_{o1}+g_{o2}=27.869\uS$.
+Both PMOS devices have $V_{SD}=0.9\V$, exceeding their
+respective overdrives under the no-body-effect assumption.
+
+The complete two-node calculation gives
+\[
+A_{v0}=-1,\quad R_{\mathrm{out}}=3.14083\kohm,\quad
+f_{\mathrm{BW}}=\mathrm{GBW}=2.000\MHz.
+\]
+Its pole frequencies are $2.00031\MHz$ and $161.272\MHz$;
+the RHP zero is at $5067.29\MHz$.
+The phase lag at $f_{\mathrm{BW}}$ is $45.73^\circ$.
+This unity-DC-gain low-pass model has no positive-frequency
+unity-gain crossing, so its phase is evaluated at the bandwidth.
+
+\newpage
+\textbf{Body-effect correction for the PMOS load.}
+The preceding PMOS-only dimensions neglect body effect.
+With M2's body fixed at $V_{DD}$ and its source at zero,
+$V_{BS2}=0.9\V$. The load therefore exhibits body effect,
+whereas the upper driver has zero source-body bias.
+Let $\Phi=2|\phi_F|$ and use the first-order relations
+\begin{align*}
+|V_{TP2}|&\approx |V_{TP0}|
++\gamma_p\left(\sqrt{\Phi+V_{BS2}}-\sqrt{\Phi}\right),\\
+\eta&=\frac{g_{mb2}}{g_{m2}}
+\approx\frac{\gamma_p}{2\sqrt{\Phi+V_{BS2}}}.
+\end{align*}
+The corrected quantities become
+\begin{align*}
+V_{OV2}&=0.9-|V_{TP2}|,\\
+G_{\mathrm{out}}&=g_{m2}(1+\eta)+\lambda_\Sigma I_D,\\
+I_D&=\frac{G_m}{2(1+\eta)/V_{OV2}+\lambda_\Sigma},\\
+V_{OV1}&=\frac{2}{2(1+\eta)/V_{OV2}+\lambda_\Sigma},\\
+\frac{\beta_1}{\beta_2}
+&=\left(1+\eta+\frac{\lambda_\Sigma V_{OV2}}{2}\right)^2.
+\end{align*}
+Thus M1 and M2 generally require unequal sizes even with matched
+PMOS process parameters. A numerical correction requires
+$\gamma_p$ and $\phi_F$, which are absent from the parameter table.
+The PDK operating-point values of $g_m$, $g_{mb}$, $g_{ds}$,
+and threshold voltage provide the corresponding refinement.
+M2's body connection remains at $V_{DD}$ in this design.
+
+\vspace{10pt}
+\textbf{(d) CMOS inverter with self-biased load (Fig.~7-9).}
+
+M1 is the NMOS driver. M2 is the diode-connected PMOS load,
+with source and body at $V_{DD}$ and drain/gate at $V_o$.
+Both active source-body voltages are zero.
+At $V_{o,Q}=0$, the load overdrive is $V_{OV2}=0.4932\V$.
+The selected lengths are $L_1=L_2=0.540\um$, for which the assumed scaling gives
+\[
+\lambda_\Sigma=(0.1624+0.1945)\frac{0.270}{0.540}
+=0.17845\V^{-1}.
+\]
+The same $C_m=0.010\pF$ and
+$G_m=318.387\uS$ as in part~(c) apply because the selected
+$A_0$, $R_S$, and $C_L$ are the same.
+Unity gain requires $g_{m1}=g_{m2}+g_{o1}+g_{o2}$:
+\begin{align*}
+I_D&=\frac{318.387\times10^{-6}}{2/0.4932+0.17845}
+=75.205\uA,\\
+V_{OV1}&=\frac{2I_D}{G_m}=0.472411\V,\\
+V_{in,Q}&=V_{SS}+V_{TN}+V_{OV1}=0.005411\V.
+\end{align*}
+
+\newpage
+\textbf{CMOS self-biased inverter: dimensions and response.}
+
+The continuous analytical dimensions are
+\begin{center}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Device & $w_{\mathrm{ana}}$ ($\mu$m) & $L_{\mathrm{ana}}$ ($\mu$m) & $n_f$ & $m$ & $W_{\mathrm{eff}}$ ($\mu$m)\\
+\midrule
+M1 (NFET driver) & 0.42201 & 0.54000 & 2 & 2 & 1.68803\\
+M2 (PFET load) & 1.75481 & 0.54000 & 2 & 2 & 7.01925\\
+\bottomrule
+\end{tabular}
+\end{center}
+Here $g_{m2}=304.967\uS$ and
+$g_{o1}+g_{o2}=13.420\uS$.
+At $V_{o,Q}=0$, $V_{DS1}=V_{SD2}=0.9\V$, so both
+devices are in saturation in the analytical model.
+The small-signal estimates are
+\begin{align*}
+A_{v0}&=-1\quad(0\,\mathrm{dB}),\qquad
+R_{\mathrm{out}}=3.14083\kohm,\\
+f_{\mathrm{BW}}&=\mathrm{GBW}=2.000\MHz,\\
+f_{p1}&=2.00031\MHz,\qquad f_{p2}=161.272\MHz,\\
+f_z&=5067.29\MHz,\qquad
+\phi_{\mathrm{lag}}(f_{\mathrm{BW}})=45.73^\circ.
+\end{align*}
+The calculated frequency response is the same as part~(c)
+because the four generic-model quantities $G_m$, $R_B$, $C_B$,
+and $C_C$ have the same selected values. Device
+capacitances will generally make the two responses different.
+
+\textbf{Performance with continuous analytical dimensions.}
+\begin{center}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Quantity & Mirror load & Digital CMOS & PMOS load & CMOS load\\
+\midrule
+$I_D$ ($\mu$A) & 26.581 & 120.000 & 71.642 & 75.205\\
+$V_{in,Q}$ (V) & $-0.28979$ & 0 & 0.04317 & 0.00541\\
+$C_m$ (pF) & 0.71683 & 0.75467 & 0.01000 & 0.01000\\
+$|A_{v0}|$ (dB) & 30.000 & 30.000 & 0.000 & 0.000\\
+$f_{\mathrm{BW}}$ (MHz) & 0.06325 & 0.06325 & 2.000 & 2.000\\
+GBW (MHz) & 2.000 & 2.000 & 2.000 & 2.000\\
+UGF (MHz) & 1.99848 & 1.99895 & --- & ---\\
+Lag at UGF ($^\circ$) & 92.07 & 89.41 & --- & ---\\
+Lag at $f_{\mathrm{BW}}$ ($^\circ$) & 45.12 & 45.04 & 45.73 & 45.73\\
+\bottomrule
+\end{tabular}
+\end{center}
+The currents above are branch currents. The mirror-loaded
+inverter also draws $I_{\mathrm{bias}}$ in its reference branch.
+The summary uses unrounded dimensions and the stated approximate
+model, including omission of PMOS load body effect in part~(c).
+
+\newpage
+\textbf{Grid-constrained initial dimensions.}
+
+The following initial dimensions satisfy the design grid and replace
+the continuous analytical values. Both $w$ and $L$ are selected
+on the $0.01\um$ grid before simulation.
+All listed instances initially have $n_f=m=2$, with
+$W_{\mathrm{eff}}=4w$. These initial counts remain adjustable.
+\begin{center}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}llrrrrr@{}}
+\toprule
+Circuit & MOS & $w$ ($\mu$m) & $L$ ($\mu$m) & $n_f$ & $m$
+& $W_{\mathrm{eff}}$ ($\mu$m)\\
+\midrule
+Mirror load & M1 & 0.53 & 0.27 & 2 & 2 & 2.12\\
+ & M2, M3, each & 2.40 & 0.27 & 2 & 2 & 9.60\\
+Digital CMOS & M1 & 0.47 & 0.37 & 2 & 2 & 1.88\\
+ & M2 & 1.90 & 0.37 & 2 & 2 & 7.60\\
+PMOS buffer & M1 & 1.00 & 0.27 & 2 & 2 & 4.00\\
+ & M2 & 0.84 & 0.27 & 2 & 2 & 3.36\\
+CMOS buffer & M1 & 0.42 & 0.54 & 2 & 2 & 1.68\\
+ & M2 & 1.75 & 0.54 & 2 & 2 & 7.00\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The operating points and small-signal parameters below correspond
+to these exact dimensions. The mirror reference current is
+$I_{\mathrm{bias}}=26.5812\uA$. For the other circuits, the input
+bias is obtained by imposing $V_{o,Q}=0$ on the grid-constrained
+dimensions. Consequently, the digital CMOS
+pair no longer has exactly zero input bias.
+
+\begin{center}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Quantity & Mirror load & Digital CMOS & PMOS buffer & CMOS buffer\\
+\midrule
+$I_D$ ($\mu$A) & 26.5812 & 119.1389 & 71.9987 & 74.9987\\
+$V_{in,Q}$ (V) & $-0.289789$ & $-0.000621$ & 0.041175 & 0.005889\\
+$C_m$ (pF) & 0.716827 & 0.754832 & 0.010000 & 0.010000\\
+$|A_{v0}|$ (dB) & 29.9998 & 30.1075 & $-0.0384$ & $-0.0088$\\
+$f_{\mathrm{BW}}$ (MHz) & 0.063247 & 0.062468 & 2.009943 & 1.994614\\
+GBW (MHz) & 2.000000 & 2.000000 & 2.001070 & 1.992597\\
+UGF (MHz) & 1.998480 & 1.998972 & --- & ---\\
+Lag at UGF ($^\circ$) & 92.065 & 89.444 & --- & ---\\
+Lag at $f_{\mathrm{BW}}$ ($^\circ$) & 45.123 & 45.039 & 45.732 & 45.727\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+These estimates retain the same model limitations: omitted body effect
+and parasitic capacitances, and an unverified $\lambda(L)$ approximation.
+For the grid-constrained geometry, the high-gain compensation values
+follow from Eq.~\eqref{eq:halfpower} and
+are approximately $0.716826684$ and $0.754832189\pF$.
+The residual gain and GBW offsets follow from the selected grid-constrained
+dimensions. Compliance with the specifications requires simulation
+with the corresponding PDK devices and realizable capacitor values.
+
+\newpage
+\textbf{Dummy devices and physical implementation.}
+Each active MOS has one separately named dummy instance placed
+beside it.
+Every dummy's D/G/S/B terminals connect to $V_{SS}$, including
+the PFET dummies. Dummy $n_f$ and $m$ remain configurable.
+These devices are not electrically paralleled with the active MOS,
+so their widths are excluded from $W_{\mathrm{eff}}$ in the tables.
+A PFET dummy requires its own $V_{SS}$ well/tap separated from
+the active PFET's $V_{DD}$ well. Each dummy retains its own integer
+$n_f$ and $m$ and legal per-finger width; the initial dummy geometry
+follows its associated active MOS. The physical placement must satisfy
+the PDK well-spacing and isolation rules.
+
+\textbf{Matching and common-centroid placement.}
+The equal-size PMOS mirror M2/M3 uses identical units in a
+$2\times2$ AB/BA common-centroid arrangement, preserving equal
+centroids and consistent orientation. The unequal-width PMOS buffer
+uses equal-centroid interleaving of its driver and load units;
+this is not identical-unit matching and does not remove the devices'
+intentional width difference or the load's body effect.
+NMOS/PMOS pairs use separate well/body regions and symmetric blocks
+associated with each device; no cross-type common-centroid equivalence
+is assumed. Dummies remain adjacent to their associated active units
+and are not consolidated into a separate array.
+
+\textbf{Multiplicity and extracted-device correspondence.}
+The PDK \texttt{mSwitch} convention must agree with the schematic's
+width, finger-count, and multiplicity interpretation.
+The initial schematic uses \texttt{mSwitch=1}. Its correspondence
+to grouped extraction for $n_f>1$ requires CDF evaluation and
+comparison of schematic and extracted widths and multiplicities.
+Decomposition into units for common-centroid placement must preserve
+these same electrical quantities.
+
+\textbf{Consistency of simulated and physical dimensions.}
+DC and AC verification use the exact grid-constrained geometry,
+selected PDK passive values, and intended $n_f$, $m$, and
+\texttt{mSwitch} settings. The schematic and layout retain these
+values after the specifications are met. Any subsequent change in
+dimensions or effective multiplicity requires renewed circuit simulation.
+\end{enumerate}
+
+\newpage
+\textbf{Model limitations and circuit verification.}
+
+The first-order model determines the initial dimensions, bias voltages,
+and compensation values.
+The PMOS-only load requires the body-effect correction above;
+the longer-channel CMOS designs depend on the accuracy of the
+assumed $\lambda(L)$ behavior. Gate capacitance, finite mirror
+reference impedance, junction capacitance, and physical passive
+models may shift both gain and bandwidth.
+
+\vspace{8pt}
+The DC transfer characteristic is obtained by sweeping $V_{in}$
+from $-0.9$ to $+0.9\V$. The two intercepts and the input bias
+producing $V_{out}=0$ characterize the operating point. AC analysis
+about that bias gives the low-frequency gain, relative $-3$ dB
+bandwidth, gain-bandwidth product, and any positive-frequency
+unity-gain crossing. Dynamic phase lag excludes the DC inversion
+and is evaluated at UGF for the high-gain designs and at the bandwidth
+for the unity-gain designs. Each sizing change and parasitic extraction
+requires a new bias calculation.
+
+\vspace{8pt}
+Pre-layout simulation uses legal, grid-constrained MOS dimensions
+and PDK passive values. The schematic and layout share the same
+device parameters and connectivity, including $R_S$ and $C_m$.
+Any dimensional change requires renewed DC and AC analysis.
+DRC and LVS establish geometrical legality and schematic/layout
+correspondence; simulation with extracted parasitic capacitances
+then determines the resulting circuit performance. The analytical
+estimates alone do not establish compliance with these requirements.
+
+\vspace{12pt}
+\textbf{Sources.}
+\begin{enumerate}[label={[\arabic*]},leftmargin=0.3in,
+topsep=4pt,itemsep=5pt,parsep=0pt]
+\item S. Palermo, \emph{ECEN 474/704 Lab 7: Frequency Response
+of Inverting Amplifiers}, course laboratory handout,
+Figs.~7-2, 7-5, 7-6, 7-8, and 7-9; Prelab Questions 1--3.
+\item Anonymous contributor, \emph{ECEN 474/704 Lab 1: Introduction to Cadence
+and MOS Device Characterization}, laboratory report, Table~I:
+single-finger $5/0.27\um$ NFET/PFET parameter measurements.
+\end{enumerate}
+
+\end{document}

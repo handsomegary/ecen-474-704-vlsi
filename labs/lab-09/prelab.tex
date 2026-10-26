@@ -1,0 +1,479 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{newtxtext,newtxmath}
+\usepackage{helvet}
+\usepackage{enumitem}
+\usepackage{caption,booktabs}
+\usepackage[hidelinks]{hyperref}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\emergencystretch}{2em}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\AtBeginDocument{\fontsize{12}{13.8}\selectfont}
+\setlist[enumerate,1]{label=\arabic*.,leftmargin=0.25in,
+labelsep=0.08in,align=left,topsep=0pt,itemsep=14pt,parsep=6pt}
+\newcommand{\um}{\,\mu\mathrm{m}}
+\newcommand{\uA}{\,\mu\mathrm{A}}
+\newcommand{\uS}{\,\mu\mathrm{S}}
+\newcommand{\uW}{\,\mu\mathrm{W}}
+\newcommand{\mS}{\,\mathrm{mS}}
+\newcommand{\kohm}{\,\mathrm{k}\Omega}
+\newcommand{\V}{\,\mathrm{V}}
+\newcommand{\MHz}{\,\mathrm{MHz}}
+\newcommand{\kHz}{\,\mathrm{kHz}}
+\newcommand{\pF}{\,\mathrm{pF}}
+\newcommand{\Vus}{\,\mathrm{V}/\mu\mathrm{s}}
+
+\hypersetup{pdfauthor={Anonymous contributor},pdftitle={ECEN 474/704 - Lab 9 Prelab},pdfsubject={Anonymized laboratory prelab}}
+\begin{document}
+{\fontsize{11}{12.65}\selectfont
+\hfill /November 6, 2026\par}
+{\centering
+{\fontsize{14}{16.1}\selectfont\sffamily\bfseries ECEN 474/704\par}
+{\fontsize{14}{16.1}\selectfont Lab 9: Prelab\par}
+{\fontsize{14}{16.1}\selectfont Anonymous contributor\par}
+}
+\vspace{12pt}
+\begin{enumerate}
+
+\item \textbf{Two-stage Miller operational-amplifier design (Fig.~9-3).}
+Design the amplifier to meet Table~9-1 of the laboratory handout.
+\begin{center}
+\small
+\begin{tabular}{@{}lc@{}}
+\toprule
+Parameter & Requirement\\
+\midrule
+Open-loop DC voltage gain, $A_{v0}$ & $>55\,\mathrm{dB}$\\
+Common-mode rejection ratio & $>60\,\mathrm{dB}$\\
+Gain--bandwidth product & $>3\MHz$\\
+Phase margin in unity-gain feedback & $>45^\circ$\\
+Peak-to-peak output swing & $>1.2\V$\\
+Load capacitance, $C_L$ & $30\pF$\\
+Load resistance, $R_L$ & $\infty$ (open circuit)\\
+Power, including the bias-reference branch & $<500\uW$\\
+Power supplies & $V_{DD}=+0.9\V,\quad V_{SS}=-0.9\V$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Solution.}
+
+\textbf{Device parameters and assumptions.}
+The device parameters are taken from the single-finger
+$W_{\mathrm{total}}=5\um$, $L=0.27\um$ measurements in
+Table~I of the Lab~1 report:
+\begin{center}
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Parameter & NFET & PFET\\
+\midrule
+$K_P=\mu C_{ox}$ ($\mu$A/V$^2$) & 215.6 & 47.57\\
+$|V_{TH}|$ (V) & 0.4330 & 0.4068\\
+$\lambda$ (V$^{-1}$) & 0.1624 & 0.1945\\
+$\theta$ (V$^{-1}$) & 0.9999 & 0.6558\\
+\bottomrule
+\end{tabular}
+\end{center}
+All transistors have $\boxed{L=0.270\um}$. The square-law model gives
+\[
+I_D\approx\frac12K_P\frac{W_{\mathrm{eff}}}{L}V_{OV}^2,\qquad
+g_m\approx\frac{2I_D}{V_{OV}},\qquad
+r_o\approx\frac{1}{\lambda I_D}.
+\]
+The DC analysis neglects body effect, mobility degradation, and
+channel-length modulation. Thus, the listed $\theta$ does not enter
+the sizing equations. Finite $r_o$ is retained in the small-signal
+model, while intrinsic node capacitances are neglected in the
+initial frequency analysis. The results below follow from these
+approximations.
+
+\newpage
+\textbf{(a) Current budget and transconductance selection.}
+
+In Fig.~9-3, M1/M2 form the NMOS input pair, M3/M4 the PMOS
+mirror load, M5 the diode-connected NMOS bias reference, M6 the
+tail source, M7 the output sink, and M8 the PMOS gain device.
+$C_c$ connects the first-stage output to the final output.
+
+Including the reference branch, the power limit imposes
+\[
+I_{\mathrm{total}}<
+\frac{500\uW}{V_{DD}-V_{SS}}
+=\frac{500\uW}{1.8\V}=277.778\uA.
+\]
+The selected bias currents and compensation capacitance are
+\[
+\boxed{I_{\mathrm{bias}}=10\uA,\quad I_T=40\uA,\quad I_2=160\uA,
+\quad C_c=10\pF.}
+\]
+At balanced input, $I_{D1,2,3,4}=20\uA$. The ideal current
+ratios are M6:M5 $=4:1$ and M7:M5 $=16:1$, giving
+\[
+P_Q=(1.8\V)(10+40+160)\uA
+=\boxed{378\uW<500\uW}.
+\]
+The nominal power margin is therefore $122\uW$. A DC common-mode
+sweep determines the maximum power over the valid input range.
+
+From $\mathrm{GBW}\approx g_{m1}/(2\pi C_c)$,
+\[
+g_{m1}>2\pi(3\MHz)(10\pF)=188.50\uS.
+\]
+An input overdrive of $V_{OV1,2}=0.160\V$ gives
+$g_{m1,2}=250\uS$. For the remaining devices, the selected
+overdrives are $V_{OV3,4,8}=0.200\V$ and
+$V_{OV5,6,7}=0.150\V$, yielding
+\[
+g_{m3,4}=200\uS,\qquad g_{m8}=1.600\mS.
+\]
+The resulting estimate is $g_{m1}/(2\pi C_c)=3.979\MHz$.
+Part~(f) includes the second pole and the feedforward zero in the
+unity-gain frequency and phase-margin calculation.
+
+\textbf{(b) Continuous analytical dimensions.}
+Solving the drain-current equation for the aspect ratio, with
+currents in $\mu$A and $K_P$ in $\mu$A/V$^2$, gives
+\[
+\frac{W_{\mathrm{eff}}}{L}=\frac{2I_D}{K_PV_{OV}^2}.
+\]
+For example, $(W/L)_{1,2}=40/[215.6(0.16)^2]=7.24722$.
+The resulting continuous widths are:
+\begin{center}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Devices & Type & $I_D$ ($\mu$A) & $V_{OV}$ (V) &
+ $W_{\mathrm{eff}}$ ($\mu$m) & $L$ ($\mu$m)\\
+\midrule
+M1, M2 & NFET & 20 & 0.160 & 1.95675 & 0.270\\
+M3, M4 & PFET & 20 & 0.200 & 5.67585 & 0.270\\
+M5 & NFET & 10 & 0.150 & 1.11317 & 0.270\\
+M6 & NFET & 40 & 0.150 & 4.45269 & 0.270\\
+M7 & NFET & 160 & 0.150 & 17.81076 & 0.270\\
+M8 & PFET & 160 & 0.200 & 45.40677 & 0.270\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\newpage
+\textbf{(c) Grid-constrained initial sizes and dummy arrangement.}
+
+The analytical dimensions are rounded to the $0.01\um$ design grid.
+For a finger width $w$, a finger count $n_f$, and a parallel
+multiplicity $m$, the effective width is
+\[
+W_{\mathrm{eff}}=w\,n_f\,m,\qquad w_t=w\,n_f.
+\]
+The instance width $w_t$ excludes $m$. The entries below apply to
+each named transistor individually.
+\begin{center}
+\small
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Device & $w$ ($\mu$m) & $L$ ($\mu$m) & $n_f$ & $m$ &
+ $W_{\mathrm{eff}}$ ($\mu$m)\\
+\midrule
+M1, M2 & 0.98 & 0.27 & 1 & 2 & 1.96\\
+M3, M4 & 1.42 & 0.27 & 1 & 4 & 5.68\\
+M5 & 1.11 & 0.27 & 1 & 1 & 1.11\\
+M6 & 1.11 & 0.27 & 1 & 4 & 4.44\\
+M7 & 1.11 & 0.27 & 1 & 16 & 17.76\\
+M8 & 1.42 & 0.27 & 1 & 32 & 45.44\\
+\bottomrule
+\end{tabular}
+\end{center}
+These dimensions preserve the NMOS bias ratios exactly and give
+$(W/L)_8/(W/L)_3=8$. Hence, the $160\uA$ output PMOS and
+$20\uA$ mirror devices have equal square-law overdrive.
+The gate of M8 is driven by the first-stage output and is separate
+from the diode-connected gate of M3.
+
+For $I_{\mathrm{bias}}=10\uA$, the rounded dimensions give
+\[
+V_{OV1,2}=0.159867\V,\quad
+V_{OV3,4,8}=0.199927\V,\quad
+V_{OV5,6,7}=0.150214\V.
+\]
+Thus $g_{m1,2}=250.208\uS$ and $g_{m8}=1.600585\mS$.
+The subsequent calculations use these dimensions.
+
+\textbf{Matching and dummies.}
+M1/M2 use equal units in an AB/BA common-centroid arrangement.
+M3/M4 likewise use equal unit widths, equal centroids, and
+symmetric routing. M5/M6/M7 use the same unit size and orientation;
+their different multiplicities set the intended current ratios.
+The resulting arrangement contains $65$ active one-finger units.
+
+Each active MOS symbol has one adjacent dummy \emph{symbol}
+with the same unit $w$ and $L$. A dummy multiplicity of
+$n_f=1,\ m=2$ represents two physical edge units per active
+device group ($16$ dummy units in total).
+NFET dummy D/G/S/B all connect to $V_{SS}$; PFET dummy D/G/S/B
+all connect to $V_{DD}$. The physical edge units follow the
+boundaries of the matched groups. Since the dummies carry no
+signal current, their widths are excluded from active
+$W_{\mathrm{eff}}$.
+
+Consistent schematic and extracted netlists require the same
+finger widths, finger counts, and multiplicities. This includes
+the CDF width convention and the extraction \texttt{mSwitch}
+setting. The dimensions above define the initial design;
+pre-layout DC and AC simulations determine the final dimensions.
+
+\newpage
+\textbf{(d) Operating point, common-mode range, and output headroom.}
+
+The selected input bias is $V_{CM,Q}=0.150\V$, with a nominal
+output target of $V_{o,Q}=0$.
+Let $v_x$ be the M1/M3 drain node, $v_y$ the M2/M4 drain
+and M8 gate node, and $v_s$ the input-pair source node.
+Substitution of the rounded dimensions gives
+\begin{align*}
+V_B&=V_{SS}+V_{TN}+V_{OV5}=-0.316786\V,\\
+V_s&=V_{CM,Q}-V_{TN}-V_{OV1}=-0.442867\V,\\
+V_x&=V_{DD}-|V_{TP}|-V_{OV3}=0.293273\V,\\
+V_y&=V_{DD}-|V_{TP}|-V_{OV8}=0.293273\V.
+\end{align*}
+At this output voltage, $V_{DS7}=V_{SD8}=0.9\V$.
+Also, $V_{DS1,2}=0.736140\V$, $V_{SD3,4}=0.606727\V$,
+and $V_{DS6}=0.457133\V$, all above their selected overdrives.
+With channel-length modulation neglected, equal output-branch
+currents do not uniquely determine $V_{o,Q}$. An input-offset
+sweep establishes the bias that produces $V_o=0$ for open-loop
+measurements.
+
+The input-pair and tail-source saturation conditions give
+\begin{align*}
+V_{CM,\min}&\approx V_{SS}+V_{OV6}+V_{TN}+V_{OV1}
+=-0.156919\V,\\
+V_{CM,\max}&\approx V_{DD}-|V_{TP}|-V_{OV3}+V_{TN}
+=0.726273\V.
+\end{align*}
+The selected $0.150\V$ lies inside this interval.
+These bounds follow from the stated threshold-voltage approximation;
+the transistor-level DC sweep includes body effect and the associated
+bias shifts.
+
+At the output, the saturation-limited window is
+\[
+V_{SS}+V_{OV7}<V_o<V_{DD}-V_{OV8},
+\qquad -0.749786<V_o<0.700073\V.
+\]
+Its total span is $1.449859\V$, and the symmetric headroom about
+zero is approximately $\boxed{1.400146\V_{pp}>1.2\V_{pp}}$.
+This interval is set by transistor saturation. The swing at a
+specified distortion is obtained from $100\,\mathrm{Hz}$ open-loop
+PSS at the input amplitude corresponding to $5\%$ THD.
+
+\textbf{Slew rate.}
+The tail current limits the rate of change of the compensation
+capacitor voltage, giving
+\[
+\mathrm{SR}\approx I_T/C_c=\boxed{4.0\Vus}.
+\]
+For falling output, M7 must sink both compensation and load current:
+\[
+\frac{I_2-I_T}{C_L}=
+\frac{160-40}{30}\frac{\mu\mathrm{A}}{\mathrm{pF}}=4.0\Vus.
+\]
+A rising $4\Vus$ output requires about
+$I_8=I_7+I_T+C_L\mathrm{SR}=320\uA$, twice its quiescent
+current. The rising slew-rate estimate therefore requires M8 to
+supply this current. Transient analysis determines the rising and
+falling slew rates; Lab~9 specifies no numerical minimum.
+
+\newpage
+\textbf{(e) Finite-output-resistance gain and CMRR.}
+
+The common-mode response depends on the finite tail-source
+conductance. For the small-signal analysis, define
+\[
+n=g_{m1},\ p=g_{m3},\ g=g_{ds1},\ q=g_{ds3},\
+t=g_{ds6},\quad u=g+q,\quad h=n+g.
+\]
+Matched pairs have equal small-signal parameters. With the supplies
+and bias gate at AC ground, the first-stage nodal matrix is
+\[
+\begin{bmatrix}
+u+p&0&-h\\
+p&u&-h\\
+-g&-g&t+2h
+\end{bmatrix}
+\begin{bmatrix}v_x\\v_y\\v_s\end{bmatrix}
+=
+\begin{cases}
+[n/2,\ -n/2,\ 0]^T v_{id},\\
+[-n,\ -n,\ 2n]^T v_{cm}.
+\end{cases}
+\]
+Here $v_{id}=v_{i+}-v_{i-}$, with M2 receiving $+v_{id}/2$.
+Let $D=t(u+p)+2h(p+q)$. Solving gives
+\begin{align*}
+A_{d1}=\frac{v_y}{v_{id}}
+&=-\frac{n[t(u+2p)+2h(2p+q)]}{2uD},\\
+A_{cm1}=\frac{v_y}{v_{cm}}&=-\frac{nt}{D}.
+\end{align*}
+For the grid sizes, in $\mu$S,
+\[
+n=250.2076,\quad p=200.0732,\quad
+g=3.248,\quad q=3.890,\quad t=6.496.
+\]
+Therefore
+\[
+A_{d1}=-34.71517,\qquad A_{cm1}=-0.01551834,
+\]
+\[
+\boxed{\mathrm{CMRR}=20\log_{10}
+\left|\frac{A_{d1}}{A_{cm1}}\right|=66.9935\,\mathrm{dB}>60\,\mathrm{dB}.}
+\]
+The second-stage gain cancels in this ratio. The result retains
+finite tail $r_o$ under the assumptions of matched devices and
+negligible body effect.
+
+The first-stage output resistance is found by setting both input
+voltages to zero and injecting a test current into $v_y$:
+\[
+R_A=\frac{(u+p)(t+2h)-gh}{uD}=141.1964\kohm.
+\]
+Thus its equivalent differential transconductance is
+$G_{mA}=|A_{d1}|/R_A=245.8644\uS$.
+For the second stage,
+\begin{align*}
+R_B&=r_{o7}\parallel r_{o8}
+=\frac{1}{(\lambda_n+\lambda_p)I_2}=17.5119\kohm,\\
+A_2&=-g_{m8}R_B=-28.02930,\\
+A_{v0}&=A_{d1}A_2=973.0421\,\mathrm{V/V},\\
+20\log_{10}|A_{v0}|&=\boxed{59.7626\,\mathrm{dB}>55\,\mathrm{dB}}.
+\end{align*}
+
+\newpage
+\textbf{(f) Miller compensation and phase margin.}
+
+The first stage is represented by its Norton equivalent from part~(e), with
+$C_A=0$, $C_B=C_L=30\pF$, and $C_c=10\pF$.
+The two-node model gives
+\[
+H(s)=\frac{A_{v0}(1-s/\omega_z)}{1+a s+b s^2},
+\qquad \omega_z=\frac{g_{m8}}{C_c},
+\]
+\begin{align*}
+a&=R_A(C_A+C_c)+R_B(C_B+C_c)+g_{m8}R_AR_BC_c,\\
+b&=R_AR_B(C_AC_B+C_AC_c+C_BC_c).
+\end{align*}
+For the selected dimensions,
+\[
+a=4.1688808\times10^{-5}\,\mathrm{s},\qquad
+b=7.4178551\times10^{-13}\,\mathrm{s}^2.
+\]
+The right-half-plane zero adds phase lag.
+The two poles are $s=-\omega_{p1}$ and $s=-\omega_{p2}$:
+\[
+\omega_{p1}=\frac{2}{a+\sqrt{a^2-4b}},\qquad
+\omega_{p2}=\frac{a+\sqrt{a^2-4b}}{2b}.
+\]
+Converting angular frequencies to Hz,
+\[
+\boxed{f_{p1}=3.81932\kHz,\quad
+f_{p2}=8.94079\MHz,\quad f_z=25.47411\MHz.}
+\]
+
+\textbf{Gain--bandwidth product and unity-gain frequency.}
+The bandwidth $f_{\mathrm{BW}}$ satisfies
+$|H(j2\pi f_{\mathrm{BW}})|=A_{v0}/\sqrt2$, and the gain--bandwidth
+product is $\mathrm{GBW}=A_{v0}f_{\mathrm{BW}}$.
+The unity-gain frequency $f_u$ satisfies $|H(j2\pi f_u)|=1$.
+With $x=\omega_u^2$, this condition reduces to
+\[
+b^2x^2+
+\left(a^2-2b-\frac{A_{v0}^2}{\omega_z^2}\right)x+
+1-A_{v0}^2=0.
+\]
+Taking its positive solution yields
+\begin{align*}
+f_{\mathrm{BW}}&=3.81932\kHz,\\
+\mathrm{GBW}&=\boxed{3.71636\MHz>3\MHz},\\
+f_u&=\boxed{3.49386\MHz}.
+\end{align*}
+For unity negative feedback,
+\[
+\mathrm{PM}=180^\circ-
+\tan^{-1}\frac{f_u}{f_{p1}}-
+\tan^{-1}\frac{f_u}{f_{p2}}-
+\tan^{-1}\frac{f_u}{f_z}
+=\boxed{60.9086^\circ>45^\circ}.
+\]
+The two-node model therefore satisfies the phase-margin requirement.
+The calculation excludes intrinsic mirror and tail-node poles,
+body effect, and layout parasitics. Unity-feedback STB analysis
+evaluates their effect on the complete transistor circuit.
+
+\newpage
+\textbf{(g) Summary.}
+
+All values below use the grid-constrained geometry in part~(c).
+\begin{center}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lcl@{}}
+\toprule
+Quantity & Calculated value & Specification / note\\
+\midrule
+DC gain & $59.76\,\mathrm{dB}$ & $>55\,\mathrm{dB}$\\
+CMRR & $66.99\,\mathrm{dB}$ & $>60\,\mathrm{dB}$\\
+GBW & $3.716\MHz$ & $>3\MHz$\\
+Unity-gain frequency & $3.494\MHz$ & Actual model crossing\\
+Phase margin & $60.91^\circ$ & $>45^\circ$\\
+Power including bias & $378\uW$ & $<500\uW$\\
+Centered output headroom & $1.400\V_{pp}$ & $>1.2\V_{pp}$ target\\
+$5\%$-THD PSS swing & To be simulated & Not established by headroom\\
+Common-mode input range & $[-0.157,\ 0.726]\V$ & Body effect omitted\\
+Slew-rate estimate & $4.0\Vus$ & No specified minimum\\
+$C_c$, $C_L$, $R_L$ & $10\pF,\ 30\pF,\ \infty$ & Selected compensation/load\\
+\bottomrule
+\end{tabular}
+\end{center}
+With $C_A=1\pF$ at the first-stage output, the two-node model
+gives GBW $=3.704\MHz$, $f_u=3.429\MHz$, and
+PM $=58.97^\circ$. Thus, the selected compensation maintains
+both the gain--bandwidth and phase-margin requirements with this
+additional node capacitance.
+
+Within the model used here, the calculated gain, CMRR, GBW,
+phase margin, and quiescent power satisfy the specified limits.
+The dimensions in part~(c), together
+with $C_c=10\pF$, therefore form the initial design.
+The $1.400\V_{pp}$ output headroom exceeds the $1.2\V_{pp}$
+swing target. This headroom follows from the saturation constraints;
+the output swing at $5\%$ THD is determined by the
+$100\,\mathrm{Hz}$ PSS test.
+
+The closed-loop IM3 test uses $10\,\mathrm{kHz}$ and
+$11\,\mathrm{kHz}$ tones with an amplitude of $300\,\mathrm{mV}$
+each. The sum of the tone amplitudes is $0.6\V$, greater than
+the available input excursion about $V_{CM}=0.150\V$.
+The specified test therefore extends beyond the calculated
+common-mode input range. PSS determines the resulting
+intermodulation products, while noise, PSRR, and sensitivity to
+process variation and mismatch are evaluated in their respective
+transistor-level analyses.
+
+\vspace{8pt}
+\textbf{References.}
+\begin{enumerate}[label={[\arabic*]},leftmargin=0.3in,
+topsep=4pt,itemsep=4pt,parsep=0pt]
+\item \emph{ECEN 474/704 Lab 9: Two-Stage Miller Operational Amplifier},
+course handout: Fig.~9-3, small-signal model, and Table~9-1;
+PSS swing and report instructions.
+\item Anonymous contributor, \emph{ECEN 474/704 Lab 1 Report}, Table~I:
+single-finger $W=5\um$, $L=0.27\um$ NFET/PFET parameter rows.
+\end{enumerate}
+\end{enumerate}
+\end{document}

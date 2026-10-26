@@ -1,0 +1,265 @@
+\documentclass[12pt,letterpaper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{newtxtext,newtxmath}
+\usepackage{helvet}
+\usepackage{enumitem}
+\usepackage{caption,booktabs}
+\usepackage[hidelinks]{hyperref}
+\captionsetup{font=small,labelfont=bf,skip=4pt}
+\renewcommand{\arraystretch}{1.15}
+\setlength{\emergencystretch}{2em}
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\AtBeginDocument{\fontsize{12}{13.8}\selectfont}
+\setlist[enumerate,1]{label=\arabic*.,leftmargin=0.25in,
+labelsep=0.08in,align=left,topsep=0pt,itemsep=14pt,parsep=6pt}
+
+\hypersetup{pdfauthor={Anonymous contributor},pdftitle={ECEN 474/704 - Lab 5 Prelab},pdfsubject={Anonymized laboratory prelab}}
+\begin{document}
+{\fontsize{11}{12.65}\selectfont
+\hfill September 29, 2026\par}
+{\centering
+{\fontsize{14}{16.1}\selectfont\sffamily\bfseries ECEN 474/704\par}
+{\fontsize{14}{16.1}\selectfont Lab 5: Prelab\par}
+{\fontsize{14}{16.1}\selectfont Anonymous contributor\par}
+}
+\vspace{12pt}
+\begin{enumerate}
+
+\item \textbf{Comparison of current-mirror topologies.}
+Make a table listing the three current-mirror topologies described in
+this lab. Rate each topology using good, medium, and bad for output
+resistance, accuracy, complexity, and compliance voltage.
+
+\textbf{Solution.}
+
+The comparison assumes comparable device parameters and operating
+currents. ``Good'' denotes a desirable
+property: high output resistance, high accuracy, low complexity, or
+low required compliance voltage.
+
+\begin{center}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Topology & $R_{\mathrm{out}}$ & Accuracy & Complexity & Compliance voltage\\
+\midrule
+Simple & Bad & Medium & Good & Good\\
+Cascode & Good & Good & Medium & Bad\\
+Low-voltage cascode & Good & Good & Bad & Medium\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{(a) Simple current mirror.}
+The two-transistor mirror has the lowest complexity and requires
+approximately one overdrive voltage at its output. Its output
+resistance is approximately $r_o$. Differences between the reference
+and output drain voltages produce current error through
+channel-length modulation.
+
+\textbf{(b) Cascode current mirror.}
+The cascode devices reduce changes in the drain voltages of the
+mirroring devices, improving current accuracy and increasing output
+resistance to approximately $g_mr_o^2$ when $g_mr_o\gg1$.
+For equal overdrives, the conventional topology requires approximately
+$V_{TH}+2V_{OV}$ of output voltage.
+
+\textbf{(c) Low-voltage cascode current mirror.}
+A separate bias branch sets the cascode gate voltage, allowing high
+output resistance and good current matching with an ideal minimum
+compliance voltage near $2V_{OV}$.
+This is lower than the conventional cascode requirement but higher
+than that of the simple mirror. The additional bias transistor and
+bias current increase circuit complexity. Saturation margin increases
+the practical compliance voltage above the ideal minimum.
+
+\newpage
+\item \textbf{Simple 1:1 current-mirror design.}
+Design a simple 1:1 current mirror with a compliance voltage between
+$125$ and $175\,\mathrm{mV}$, an output current of
+$120\,\mu\mathrm{A}$, and an output resistance of at least
+$25\,\mathrm{k}\Omega$. Determine the width and length of each transistor.
+
+\textbf{Solution.}
+
+\textbf{(a) Process parameters and channel length.}
+The single-finger $W/L=5/0.27\,\mu\mathrm{m}$ NFET in the Lab 1
+report provides the following extracted parameters:
+\[
+\mu_nC_{ox}=215.6\,\mu\mathrm{A}/\mathrm{V}^2,\quad
+V_{TH}=0.433\,\mathrm{V},\quad \lambda=0.1624\,\mathrm{V}^{-1}.
+\]
+For $L_1=L_2=0.27\,\mu\mathrm{m}$, the first-order output-resistance
+estimate is
+\[
+R_{\mathrm{out}}\approx\frac{1}{\lambda I_D}
+=\frac{1}{0.1624(120\times10^{-6})}
+=51.3\,\mathrm{k}\Omega>25\,\mathrm{k}\Omega.
+\]
+
+\textbf{(b) Overdrive and transistor widths.}
+The center of the specified compliance range gives
+\[
+V_{OV}\approx V_{\mathrm{compliance}}=0.150\,\mathrm{V},\qquad
+V_{GS}\approx V_{TH}+V_{OV}=0.583\,\mathrm{V}.
+\]
+Neglecting channel-length modulation in the DC current, the
+square-law model gives
+\[
+I_D\approx\frac12\mu_nC_{ox}\frac WL V_{OV}^2,
+\qquad
+\frac WL=\frac{2(120)}{215.6(0.150)^2}=49.47.
+\]
+Consequently,
+\[
+\boxed{W_1=W_2=13.36\,\mu\mathrm{m},\qquad
+L_1=L_2=0.27\,\mu\mathrm{m}.}
+\]
+With $I_{\mathrm{in}}=120\,\mu\mathrm{A}$, equal dimensions give a
+nominal 1:1 current ratio. The stated widths are total effective
+widths, not individual finger widths.
+
+\textbf{(c) Operating region and interpretation.}
+M1 is diode-connected, with $V_{DS1}=V_{GS1}\approx0.583\,\mathrm{V}
+>V_{OV1}$. M2 is in saturation for approximately
+$V_{\mathrm{out}}\ge0.150\,\mathrm{V}$ under this model.
+
+The dimensions follow from a first-order model whose extracted
+parameters depend on geometry and bias. Mobility degradation,
+characterized by $\theta=0.9999\,\mathrm{V}^{-1}$ in Lab 1, is omitted
+from the sizing equation. Channel-length modulation introduces an
+output-voltage dependence into the drain current. The approximate resistance
+$1/(\lambda I_D)$ also neglects the finite $(1+\lambda V_{DS})$
+correction. These effects require simulation to determine the actual
+compliance voltage, output current, and output resistance.
+
+\newpage
+\item \textbf{Low-voltage cascode current-mirror design.}
+Design a low-voltage cascode current mirror with a 1:2 input-to-output
+current ratio, a $60\,\mu\mathrm{A}$ input current, a low-frequency
+output resistance greater than $1\,\mathrm{M}\Omega$, and a compliance
+voltage below $500\,\mathrm{mV}$. Determine all transistor widths and
+lengths and the bias current. Validate saturation at the DC operating point.
+
+\textbf{Solution.}
+
+\textbf{(a) Topology and design assumptions.}
+In the topology of Fig.~5-3 in the Lab 5 manual, M1 and M2 are the
+lower mirroring devices; M3 and M4 are their respective upper cascode
+devices. The drain of M3 connects to the gates of M1 and M2.
+The diode-connected bias device $M_B$ supplies the gate voltage of
+M3 and M4. The sources of M1, M2, and $M_B$ connect to $V_{SS}$;
+all NFET bulk terminals connect to $V_{SS}$.
+
+The design uses the Lab 1 parameters of Question 2, with
+\[
+L_1=L_2=L_3=L_4=L_B=0.27\,\mu\mathrm{m},\qquad
+V_{OV1}=V_{OV2}=V_{OV3}=V_{OV4}=0.150\,\mathrm{V}.
+\]
+The analysis neglects body effect and mobility degradation. The
+square law determines the device dimensions, and $\lambda$ determines
+the small-signal output-resistance estimate.
+
+\textbf{(b) Reference and output branch dimensions.}
+For M1 and M3, $I_D=60\,\mu\mathrm{A}$:
+\[
+\left(\frac WL\right)_{1,3}
+=\frac{2(60)}{215.6(0.150)^2}=24.74,
+\qquad W_1=W_3=6.68\,\mu\mathrm{m}.
+\]
+For M2 and M4, $I_D=120\,\mu\mathrm{A}$:
+\[
+\left(\frac WL\right)_{2,4}=49.47,
+\qquad W_2=W_4=13.36\,\mu\mathrm{m}.
+\]
+The doubled output-branch widths provide the nominal 1:2 current ratio.
+
+\textbf{(c) Bias branch and compliance voltage.}
+Setting $V_{DS1}\approx V_{DS2}\approx0.250\,\mathrm{V}$ provides
+$0.100\,\mathrm{V}$ of nominal saturation margin for the lower devices.
+The required cascode gate voltage is
+\[
+V_B=V_{S3}+V_{GS3}=0.250+(0.433+0.150)=0.833\,\mathrm{V}.
+\]
+Thus $V_{OVB}=V_B-V_{TH}=0.400\,\mathrm{V}$. For
+$I_{\mathrm{bias}}=60\,\mu\mathrm{A}$, the bias-device dimensions are
+\[
+\left(\frac WL\right)_B
+=\frac{2(60)}{215.6(0.400)^2}=3.479,
+\qquad \boxed{W_B\approx0.94\,\mu\mathrm{m}.}
+\]
+The predicted compliance voltage is
+\[
+\boxed{V_{\mathrm{compliance}}\approx V_{S4}+V_{OV4}
+=0.250+0.150=0.400\,\mathrm{V}<0.500\,\mathrm{V}.}
+\]
+
+\newpage
+\textbf{(d) Saturation verification at the DC operating point.}
+At the selected operating point, $V_{\mathrm{out}}=1.000\,\mathrm{V}$.
+Ideal current sources supply the input and bias
+currents. Since the drain of M3 is connected to the gate of M1,
+$V_{D3}=V_{G1}\approx0.583\,\mathrm{V}$. The first-order saturation
+condition is $V_{DS}\ge V_{GS}-V_{TH}=V_{OV}$.
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Device & $V_{DS}$ (V) & $V_{OV}$ (V) & Saturation check\\
+\midrule
+M1 & 0.250 & 0.150 & $0.250>0.150$\\
+M2 & 0.250 & 0.150 & $0.250>0.150$\\
+M3 & $0.583-0.250=0.333$ & 0.150 & $0.333>0.150$\\
+M4 & $1.000-0.250=0.750$ & 0.150 & $0.750>0.150$\\
+$M_B$ & 0.833 & 0.400 & $0.833>0.400$\\
+\bottomrule
+\end{tabular}
+\end{center}
+All five devices satisfy the saturation condition under the stated
+first-order assumptions.
+
+\textbf{(e) Low-frequency output resistance.}
+For the output devices M2 and M4,
+\[
+r_{o2}\approx r_{o4}\approx\frac{1}{0.1624(120\times10^{-6})}
+=51.3\,\mathrm{k}\Omega,
+\qquad g_{m4}\approx\frac{2I_D}{V_{OV4}}=1.60\,\mathrm{mS}.
+\]
+With the cascode gate held at its small-signal bias voltage and
+neglecting body effect,
+\begin{align*}
+R_{\mathrm{out}}&\approx r_{o2}+r_{o4}+g_{m4}r_{o2}r_{o4}\\
+&\approx\boxed{4.32\,\mathrm{M}\Omega>1\,\mathrm{M}\Omega}.
+\end{align*}
+
+\textbf{(f) Design summary and model validity.}
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Device & Total $W$ ($\mu$m) & $L$ ($\mu$m) & Nominal $I_D$ ($\mu$A)\\
+\midrule
+M1 & 6.68 & 0.27 & 60\\
+M2 & 13.36 & 0.27 & 120\\
+M3 & 6.68 & 0.27 & 60\\
+M4 & 13.36 & 0.27 & 120\\
+$M_B$ & 0.94 & 0.27 & 60\\
+\bottomrule
+\end{tabular}
+\end{center}
+The nominal bias current is $I_{\mathrm{bias}}=60\,\mu\mathrm{A}$.
+Because M3 and M4 have elevated source potentials with their bulks
+at $V_{SS}$, body effect raises their thresholds and can reduce the
+lower devices' saturation margin relative to this calculation.
+The Lab 1 summary does not provide body-effect parameters, so its
+effect on the operating point remains unquantified. Simulation of
+the device operating points determines whether $W_B$,
+$I_{\mathrm{bias}}$, or other dimensions require adjustment. The
+tabulated values therefore represent analytical design estimates.
+
+\end{enumerate}
+\end{document}
