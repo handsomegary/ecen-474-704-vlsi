@@ -8,6 +8,6 @@
   "laboratory_scope": "Only the six supplied TeX prelabs and PDFs regenerated from those sources. Word reports and original PDF documents are excluded by request.",
   "lab_3_dependencies": ["current_source.png", "capacitor.png", "resistor.png"],
   "figure_recovery": "The three figures referenced by the supplied Lab 3 TeX were recovered from its companion compiled PDF and checked visually.",
-  "publication_policy": "Original exam scans and laboratory PDFs are not published. Only the two rebuilt PDF collections, editable TeX, required recovered figures, and build/verification files are included.",
+  "publication_policy": "Original exam scans and laboratory PDFs are not published. Each of the nine generated PDFs is stored beside its corresponding TeX source, along with required recovered figures and build/verification files.",
   "anonymization": "Student name, student number, and initialed self-citations have been replaced with anonymous attribution; PDF metadata is anonymous. Public instructor and course attribution remains."
 }

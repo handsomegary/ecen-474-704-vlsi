@@ -15,5 +15,12 @@ private/
 *.pptx
 *.zip
 *.[pP][dD][fF]
-!/exams/exam1-restored.pdf
-!/labs/prelabs.pdf
+!/exams/spring-2018/content.pdf
+!/exams/fall-2016/content.pdf
+!/exams/spring-2016/content.pdf
+!/labs/lab-03/prelab.pdf
+!/labs/lab-05/prelab.pdf
+!/labs/lab-06/prelab.pdf
+!/labs/lab-07/prelab.pdf
+!/labs/lab-08/prelab.pdf
+!/labs/lab-09/prelab.pdf

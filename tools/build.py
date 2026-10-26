@@ -47,28 +47,35 @@ def main():
     report = {}
     if args.target in ('all', 'exams'):
         pdf, warnings = compile_document(engine, ROOT / 'exams/main.tex', 'exams')
-        report['exams'] = {'pages': len(PdfReader(pdf).pages), 'warnings': warnings}
-        if args.publish and not warnings:
-            shutil.copyfile(pdf, ROOT / 'exams/exam1-restored.pdf')
+        reader = PdfReader(pdf)
+        papers = json.loads((ROOT / 'source-coverage.json').read_text(encoding='utf-8'))['exam_1']
+        assert len(reader.pages) == sum(paper['pages'] for paper in papers)
+        report['exams'] = {'pages': len(reader.pages), 'warnings': warnings, 'papers': {}}
+        offset = 0
+        for paper in papers:
+            writer = PdfWriter()
+            for page in reader.pages[offset:offset + paper['pages']]:
+                writer.add_page(page)
+            writer.add_metadata({'/Title': f'ECEN 474/704 - Exam 1 - {paper["id"]}',
+                                 '/Author': 'Anonymous study archive'})
+            individual = ROOT / '.build' / f'{paper["id"]}.pdf'
+            writer.write(individual)
+            writer.close()
+            report['exams']['papers'][paper['id']] = paper['pages']
+            if args.publish and not warnings:
+                shutil.copyfile(individual, ROOT / 'exams' / paper['id'] / 'content.pdf')
+            offset += paper['pages']
         print(f'Exams: {report["exams"]["pages"]} pages; {len(warnings)} layout/reference warnings')
     if args.target in ('all', 'labs'):
-        writer = PdfWriter()
         report['labs'] = {}
         for number in LABS:
             label = f'lab-{number:02d}'
             pdf, warnings = compile_document(engine, ROOT / 'labs' / label / 'prelab.tex', label)
             pages = len(PdfReader(pdf).pages)
             report['labs'][label] = {'pages': pages, 'warnings': warnings}
-            writer.append(pdf, outline_item=f'Lab {number}: anonymous prelab', import_outline=False)
+            if args.publish and not warnings:
+                shutil.copyfile(pdf, ROOT / 'labs' / label / 'prelab.pdf')
             print(f'{label}: {pages} pages; {len(warnings)} layout/reference warnings')
-        writer.add_metadata({'/Title': 'ECEN 474/704 VLSI - Anonymous Prelabs',
-                             '/Author': 'Anonymous contributor',
-                             '/Subject': 'Anonymized existing TeX prelabs for Labs 3 and 5-9'})
-        merged = ROOT / '.build/prelabs.pdf'
-        writer.write(merged)
-        writer.close()
-        if args.publish and not any(row['warnings'] for row in report['labs'].values()):
-            shutil.copyfile(merged, ROOT / 'labs/prelabs.pdf')
     report_path = ROOT / '.build' / f'build-{args.target}.json'
     report_path.write_text(json.dumps(report, indent=2), encoding='utf-8')
     warnings = report.get('exams', {}).get('warnings', []) + [

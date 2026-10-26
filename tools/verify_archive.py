@@ -7,8 +7,13 @@ import shutil
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
-ALLOWED_PDFS = {'exams/exam1-restored.pdf', 'labs/prelabs.pdf'}
 LABS = [3, 5, 6, 7, 8, 9]
+EXAMS = {'spring-2018': 6, 'fall-2016': 6, 'spring-2016': 5}
+PDF_PAGES = {f'exams/{name}/content.pdf': pages for name, pages in EXAMS.items()}
+PDF_PAGES.update({f'labs/lab-{number:02d}/prelab.pdf': pages
+                  for number, pages in zip(LABS, [7, 4, 7, 12, 6, 7])})
+ALLOWED_PDFS = set(PDF_PAGES)
+HISTORICAL_PDFS = {'exams/exam1-restored.pdf', 'labs/prelabs.pdf'}
 CJK = re.compile('[' + chr(0x3400) + '-' + chr(0x4dbf)
                  + chr(0x4e00) + '-' + chr(0x9fff) + ']')
 PRIVATE_PATH = re.compile(r'(?<![A-Za-z0-9])[A-Za-z]:[\\/]|/U[s]ers/|/h[o]me/')
@@ -23,9 +28,10 @@ def verify_text(text, location, private_patterns=()):
         assert pattern.casefold() not in text.casefold(), f'Private identifier: {location}'
 
 
-def verify_pdf_paths(paths):
+def verify_pdf_paths(paths, historical=False):
     paths = {p for p in paths if Path(p).suffix.lower() == '.pdf'}
-    assert paths <= ALLOWED_PDFS, f'Unexpected/original PDFs: {paths - ALLOWED_PDFS}'
+    allowed = ALLOWED_PDFS | HISTORICAL_PDFS if historical else ALLOWED_PDFS
+    assert paths <= allowed, f'Unexpected/original PDFs: {paths - allowed}'
 
 
 def main():
@@ -71,12 +77,13 @@ def main():
             return subprocess.check_output(['git', *arguments], cwd=ROOT, text=True, encoding='utf-8')
         verify_pdf_paths(git('ls-files', '-z').split('\0'))
         if git('rev-list', '--all').strip():
-            verify_pdf_paths(p.strip('\r\n') for p in
-                             git('log', '--all', '--format=', '--name-only', '-z').split('\0'))
+            verify_pdf_paths((p.strip('\r\n') for p in
+                              git('log', '--all', '--format=', '--name-only', '-z').split('\0')),
+                             historical=True)
     print('PASS: three restored exams, six anonymous TeX prelabs, complete dependencies, PDF allowlist')
     if args.pdf:
         from pypdf import PdfReader
-        for relative, count in [('exams/exam1-restored.pdf', 17), ('labs/prelabs.pdf', 43)]:
+        for relative, count in PDF_PAGES.items():
             reader = PdfReader(ROOT / relative)
             assert len(reader.pages) == count, relative
             text = '\n'.join(p.extract_text() or '' for p in reader.pages)

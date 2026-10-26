@@ -33,5 +33,5 @@ jobs:
         with:
           name: ecen-vlsi-restored-exams-and-anonymous-prelabs
           path: |
-            exams/exam1-restored.pdf
-            labs/prelabs.pdf
+            exams/*/content.pdf
+            labs/lab-*/prelab.pdf
