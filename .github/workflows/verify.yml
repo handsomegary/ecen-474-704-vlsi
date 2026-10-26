@@ -22,7 +22,7 @@ jobs:
       - name: Install document dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends texlive-xetex texlive-latex-extra texlive-science texlive-fonts-recommended texlive-fonts-extra fonts-texgyre
+          sudo apt-get install -y --no-install-recommends texlive-xetex texlive-latex-extra texlive-science texlive-fonts-recommended texlive-fonts-extra texlive-plain-generic lmodern fonts-texgyre
           python -m pip install -r requirements.txt
       - name: Inspect source coverage and rebuild all documents
         run: |

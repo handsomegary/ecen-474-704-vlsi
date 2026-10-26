@@ -38,7 +38,7 @@ On Debian or Ubuntu:
 
 ```sh
 sudo apt-get update
-sudo apt-get install texlive-xetex texlive-latex-extra texlive-science texlive-fonts-recommended texlive-fonts-extra fonts-texgyre
+sudo apt-get install texlive-xetex texlive-latex-extra texlive-science texlive-fonts-recommended texlive-fonts-extra texlive-plain-generic lmodern fonts-texgyre
 python -m pip install -r requirements.txt
 python tools/build.py --publish
 python tools/verify_archive.py --pdf
